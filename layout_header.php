@@ -31,6 +31,8 @@ $usuario = $_SESSION['usuario'] ?? null;
           <li class="nav-item">
             <a class="nav-link" href="painel_admin.php">Painel Admin</a>
           </li>
+          <li class="nav-item"><a class="nav-link" href="index.php">Início</a></li>
+          <li class="nav-item"><a class="nav-link" href="produtos.php">Produtos</a></li>
         <?php endif; ?>
         <li class="nav-item">
           <a class="nav-link" href="logout.php">Sair</a>

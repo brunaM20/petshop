@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . '/db/conexao.php';
+
 $mensagem = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -9,11 +10,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT);
 
     try {
+        // Cadastra o novo usuário
         $stmt = $pdo->prepare("INSERT INTO usuarios (nome, email, senha) VALUES (:n, :e, :s)");
         $stmt->execute([':n' => $nome, ':e' => $email, ':s' => $senha]);
 
-        // Login automático após cadastro
+        // Recupera o ID do usuário recém-criado
+        $usuario_id = $pdo->lastInsertId();
+
+        // Login automático com ID
         $_SESSION['usuario'] = [
+            'id' => $usuario_id,
             'nome' => $nome,
             'email' => $email
         ];
@@ -29,6 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -39,20 +46,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <style>
     body {
       font-family: 'Poppins', sans-serif;
-      background-color: #f6fff8;
+      background-color: #f8fff8;
     }
     .card {
       border-radius: 15px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
     .btn-success {
-      background-color: #28a745;
+      background-color: #1e8449;
       border: none;
       color: #fff;
       font-weight: 600;
     }
     .btn-success:hover {
-      background-color: #218838;
+      background-color: #166d3b;
     }
   </style>
 </head>
