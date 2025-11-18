@@ -10,6 +10,22 @@ if (!isset($_SESSION['usuario']) || ($_SESSION['usuario']['tipo'] ?? '') !== 'ad
 
 $mensagem = "";
 
+// === ALTERAR DISPONIBILIDADE DO PRODUTO ===
+if (isset($_GET['toggle'])) {
+    $id = (int)$_GET['toggle'];
+
+    try {
+        $pdo->exec("
+            UPDATE produtos 
+            SET disponivel = CASE disponivel WHEN 1 THEN 0 ELSE 1 END 
+            WHERE id = $id
+        ");
+        $mensagem = "🔄 Status do produto atualizado!";
+    } catch (PDOException $e) {
+        $mensagem = "Erro ao atualizar status: " . $e->getMessage();
+    }
+}
+
 // === CADASTRO DE PRODUTO ===
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['acao'] === 'produto') {
     $nome = trim($_POST['nome']);
@@ -24,7 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
                 nome TEXT NOT NULL,
                 preco REAL NOT NULL,
                 descricao TEXT,
-                imagem TEXT
+                imagem TEXT,
+                disponivel INTEGER DEFAULT 1
             )
         ");
         $stmt->execute();
@@ -116,6 +133,8 @@ $admin_nome = htmlspecialchars($_SESSION['usuario']['nome']);
                             <th>Nome</th>
                             <th>Preço</th>
                             <th>Descrição</th>
+                            <th>Status</th>
+                            <th>Ação</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -125,6 +144,20 @@ $admin_nome = htmlspecialchars($_SESSION['usuario']['nome']);
                                 <td><?= htmlspecialchars($p['nome']) ?></td>
                                 <td>R$ <?= number_format($p['preco'], 2, ',', '.') ?></td>
                                 <td><?= htmlspecialchars($p['descricao']) ?></td>
+
+                                <td>
+                                    <?php if (($p['disponivel'] ?? 1) == 1): ?>
+                                        <span class="badge bg-success">Disponível</span>
+                                    <?php else: ?>
+                                        <span class="badge bg-danger">Indisponível</span>
+                                    <?php endif; ?>
+                                </td>
+
+                                <td>
+                                    <a href="?toggle=<?= $p['id'] ?>" class="btn btn-outline-success btn-sm">
+                                        Alternar
+                                    </a>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
