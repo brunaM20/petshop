@@ -34,7 +34,62 @@ try {
               <p class="fw-bold fs-5 text-success">
                 R$ <?php echo number_format($p['preco'], 2, ',', '.'); ?>
               </p>
-              <button class="btn btn-outline-success w-100">Comprar</button>
+<?php if (isset($p['disponivel']) && $p['disponivel'] == 0): ?>
+
+  <!-- Botão indicando indisponível -->
+  <button class="btn btn-secondary w-100" onclick="abrirPopup(<?= $p['id'] ?>)">
+      Indisponível
+  </button>
+
+  <!-- POPUP -->
+  <div class="overlay" id="popupOverlay<?= $p['id'] ?>" style="
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+  ">
+      <div class="popup" style="
+          background: #fff;
+          padding: 25px;
+          border-radius: 10px;
+          width: 300px;
+          text-align: center;
+          box-shadow: 0 0 12px rgba(0,0,0,0.3);
+          animation: aparecer .3s ease;
+      ">
+          <h3 style="color:#d60000; font-weight:bold;">Produto Indisponível</h3>
+          <p>Desculpe, este produto não está disponível no momento.</p>
+          <button onclick="fecharPopup(<?= $p['id'] ?>)" style="
+              padding: 10px 16px;
+              background:#d60000;
+              border:none;
+              color:#fff;
+              border-radius:6px;
+              cursor:pointer;
+          ">Fechar</button>
+      </div>
+  </div>
+
+<?php else: ?>
+
+  <!-- Botão normal para comprar -->
+  <button class="btn btn-outline-success w-100">Comprar</button>
+
+<?php endif; ?>
+
+<script>
+function abrirPopup(id) {
+  document.getElementById("popupOverlay" + id).style.display = "flex";
+}
+function fecharPopup(id) {
+  document.getElementById("popupOverlay" + id).style.display = "none";
+}
+</script>
+
             </div>
           </div>
         </div>
